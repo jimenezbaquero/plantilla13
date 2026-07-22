@@ -17,9 +17,12 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@admin.com',
         ]);
-        
+
         $user->assignRole('admin');
-        
-        // User::factory(10)->create();
+
+        for( $i = 0; $i < 20; $i++){
+            $user = User::factory()->create();
+            $user->assignRole('user');
+        }
     }
 }

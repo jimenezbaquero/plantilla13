@@ -275,7 +275,7 @@
 .filter__general,
 .actions-column-header {
     font-size: 1rem;
-    padding: 10px 0;
+    padding: 5px 0;
 }
 .filter--input::placeholder {
     font-size: 1rem;
