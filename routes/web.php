@@ -39,8 +39,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth','role:admin'])->group(function () {
 
-    Route::resource('users', UserController::class, ['as' => 'admin'])
-        ->middleware(['auth','role:admin']);
+    Route::resource('users', UserController::class, ['as' => 'admin']);
     Route::post('users/getData', [UserController::class, 'getData'])->name('admin.users.getData');
 
 });
