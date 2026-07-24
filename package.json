@@ -20,6 +20,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "primeicons": "^8.0.0",
         "vue-i18n": "^11.4.7",
         "vue-toastification": "^2.0.0-rc.5"
     }

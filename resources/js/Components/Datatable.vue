@@ -2,14 +2,14 @@
   <div class="general-container flex flex-col w-full h-full max-w-full overflow-hidden">
 
     <div class="table-scroll-wrapper flex-1 overflow-auto" >
-      <table class="w-full mt-3 table-fixed" :style="{ fontSize: fontSize }">
+      <table class="w-full mt-3 table-fixed" :style="{ fontSize: table.fontSize }">
         <thead>
         <tr>
-          <th v-for="(value, key) in columns" :key="key"
+          <th v-for="(value, key) in table.columns" :key="key"
               :class="['column-' + key, value.width === 'auto' ? 'auto-width' : '']"
               :style="'width:'+value.width ">
             <div class="flex items-center justify-between">
-              <div v-if="filters[key].type === 'funnel'" class="flex items-center">
+              <div v-if="table.filters.value[key].type === 'funnel'" class="flex items-center">
                 <span :class="['funnel-button-' + key]" @click="showChecks(key)"
                       class="flex items-center cursor-pointer">
                   <i
@@ -17,7 +17,7 @@
                     :class="funnelActive(key) ? 'pi-filter-fill' : 'pi-filter'"
                   />
                 </span>
-                <div v-if="filters[key].showFunnel" :class="['filter__checkbox', 'filter__checkbox-' + key]">
+                <div v-if="table.filters.value[key].showFunnel" :class="['filter__checkbox', 'filter__checkbox-' + key]">
                   <div class="filter__header">
                     <h3 class="filter__title">{{ value.name }}</h3>
                     <div class="filter__actions">
@@ -27,7 +27,7 @@
                     </div>
                   </div>
                   <div class="filter__body">
-                    <div class="block" v-for="(option, index) in filters[key].options" :key="index">
+                    <div class="block" v-for="(option, index) in table.filters.value[key].options" :key="index">
                       <input type="checkbox" class="custom-checkbox align-middle m-auto" v-model="option.checked">
                       <label class="font-size-13 text-80 leading-tight pl-2">
                         {{ option.label }}
@@ -38,13 +38,13 @@
               </div>
               <div v-if="value.filterable" class="filter__general container flex items-center truncate-text min-w-0">
                 <input v-if="value.type === 'date'" :id="'filter_' + key" type="text" :placeholder="t(value.header)"
-                       :style="{ fontSize: fontSize }"
-                       v-model="filters[key].value" class="filter--input text no-border-input flex items-center"
+                       :style="{ fontSize: table.fontSize }"
+                       v-model="table.filters.value[key].value" class="filter--input text no-border-input flex items-center"
                        onfocus="this.type='date'" v-on:blur="checkFilter(key)" @change="onFilterChange(key)"
                        :title="t(value.header)">
                 <input v-else :type="value.type === 'date' ? 'date' : 'text'" :placeholder="t(value.header)"
-                       v-model="filters[key].value" class="filter--input text no-border-input w-full"
-                       :class="'text-' + value.align" @keyup="onFilterChange(key)" :style="{ fontSize: fontSize }">
+                       v-model="table.filters.value[key].value" class="filter--input text no-border-input w-full"
+                       :class="'text-' + value.align" @keyup="onFilterChange(key)" :style="{ fontSize: table.fontSize }">
               </div>
               <div v-else class="filter__general container flex items-center truncate-text min-w-0">
                 <a class="filter--input text no-border-input flex items-center">
@@ -54,13 +54,13 @@
               <div v-if="value.sortable" class="ml-2 cursor-pointer flex items-center">
 
                 <i
-                  v-if="filters[key].order_direction === 'desc'"
+                  v-if="table.filters.value[key].order_direction === 'desc'"
                   class="pi pi-sort-down"
                   @click="toggleSort(key,'')"
                 />
 
                 <i
-                  v-else-if="filters[key].order_direction === 'asc'"
+                  v-else-if="table.filters.value[key].order_direction === 'asc'"
                   class="pi pi-sort-up"
                   @click="toggleSort(key,'desc')"
                 />
@@ -74,24 +74,24 @@
               </div>
             </div>
           </th>
-          <th v-if="actions.length > 0" class="w-1/12 text-right actions-column-header">
+          <th v-if="table.actions.length > 0" class="w-1/12 text-right actions-column-header">
             {{ t('datatable.actions') }}
           </th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(row, index) in data.data" :key="index"
-            :class="[isRowClickable ? 'clickable-row' : '']">
-          <template v-for="(value, key) in columns" :key="key">
+        <tr v-for="(row, index) in table.data.value.data" :key="index"
+            :class="[table.rowClickable ? 'clickable-row' : '']">
+          <template v-for="(value, key) in table.columns" :key="key">
             <td v-if="key !== 'id'" class="w-3/12" :class="classSelector(value)" :style="'text-' + row[key]"
                 :title="row[key]">
-              <a :href="isRowClickable ? route(routeAfterClick, row.id) : null"
-                 :class="[isRowClickable ? 'clickable-row' : '']"
-                 class="block m-0 py-4 no-underline truncate w-full min-w-0" :style="{ fontSize: fontSize }">
+              <a :href="null"
+                 :class="[table.rowClickable ? 'clickable-row' : '']" @click.stop="$emit('clickRow', row.id)"
+                 class="block m-0 py-4 no-underline truncate w-full min-w-0" :style="{ fontSize: table.fontSize }">
                 <template v-if="Array.isArray(value)">
                   <template v-if="value.length > 0">
                     <template v-for="(arrayValue, arrayKey) in row[key]">
-                      {{ arrayValue[columns[key].field_name] }}
+                      {{ arrayValue[table.columns[key].field_name] }}
                       <template v-if="arrayKey < row[key].length - 1">
                         {{ ', ' }}
                       </template>
@@ -104,8 +104,8 @@
                 <template v-else-if="value.type && value.type === 'html'">
                   <div v-html="row[value.key]"></div>
                 </template>
-                <template v-else-if="columns[key] && Object.keys(columns[key]).includes('url')">
-                  <Link class="link-cell" :href="route(columns[key].url, row.id)">
+                <template v-else-if="table.columns[key] && Object.keys(table.columns[key]).includes('url')">
+                  <Link class="link-cell" :href="route(table.columns[key].url, row.id)">
                     {{ row[key] }}
                   </Link>
                 </template>
@@ -115,12 +115,12 @@
               </a>
             </td>
           </template>
-          <td v-if="actions.length > 0" class="text-right w-1/12">
-            <div class="flex justify-end items-center" :style="{ fontSize: fontSize }">
+          <td v-if="table.actions.length > 0" class="text-right w-1/12">
+            <div class="flex justify-end items-center" :style="{ fontSize: table.fontSize }">
 
               <!-- EDIT -->
               <button
-                v-if="actions.includes('edit') || actions.includes('update')"
+                v-if="table.actions.includes('edit') || table.actions.includes('update')"
                 @click.stop="$emit('update', row.id)"
                 class="action-button edit-button"
                 title="Edit"
@@ -130,7 +130,7 @@
 
               <!-- DELETE -->
               <button
-                v-if="actions.includes('delete')"
+                v-if="table.actions.includes('delete')"
                 @click.stop="$emit('delete', row.id)"
                 class="action-button delete-button"
                 title="Delete"
@@ -143,7 +143,7 @@
         </tr>
         </tbody>
       </table>
-      <template v-if="data.data.length == 0">
+      <template v-if="table.data.value.data.length == 0">
         <div class="flex items-center justify-center h-24 bg-gray-100">
           <p class="text-gray-600">{{ t('datatable.no_data') }}</p>
         </div>
@@ -162,7 +162,7 @@
         {{ t('datatable.per_page') }}
       </div>
       <div class="pagination__wrapper">
-        <pagination-links :data="data" @change-page="onPageChange"></pagination-links>
+        <pagination-links :data="table.data.value" @change-page="onPageChange"></pagination-links>
       </div>
     </div>
   </div>
@@ -177,43 +177,15 @@ import {useI18n} from "vue-i18n";
 
 
 const props = defineProps({
-  data: {
+  table: {
     type: Object,
     required: true,
-  },
-  filters: {
-    type: Object,
-    required: true,
-  },
-  columns: {
-    type: Object,
-    required: true,
-  },
-  actions: {
-    type: Array,
-    default: () => [],
-  },
-  funnelOptions: {
-    type: Object,
-    default: () => {}
-  },
-  isRowClickable: {
-    type: Boolean,
-    default: false,
-  },
-  routeAfterClick: {
-    type: String,
-    default: '',
-  },
-  fontSize: {
-    type: String,
-    default: '1rem',
   },
 });
 
-console.log(props.filters)
+const table = table
 
-const emit = defineEmits(['sort-change', 'filter-change', 'page-change', 'per-page-change', 'funnel-filter', 'update', 'delete']);
+const emit = defineEmits(['update', 'delete', 'clickRow']);
 
 const perPageOptions = [10, 20, 30, 50, 100];
 const itemsPerPage = ref(perPageOptions[0]);
@@ -221,21 +193,17 @@ const {t} = useI18n()
 
 let filterTimeout = null
 
-const rowClick = (id) => {
-  emit('rowClick', id);
-};
-
 function toggleSort(col, order) {
-  emit('sort-change', {
-    col,
-    order
+  table.onSort( {
+    col: col,
+    order: order
   })
 }
 
 const onFunnelFilter = (key) => {
-  props.filters[key].showFunnel = false;
+  table.filters.value[key].showFunnel = false;
   funnelActive(key)
-  emit('funnel-filter', {
+  table.onFunnelFilter({
     col: key
   })
 }
@@ -243,19 +211,23 @@ const onFunnelFilter = (key) => {
 function onFilterChange(key) {
   clearTimeout(filterTimeout)
   filterTimeout = setTimeout(() => {
-    emit('filter-change', {
+    table.onFilter( {
       col: key,
-      value: props.filters[key].value
+      value: table.filters.value[key].value
     })
   }, 500)
 }
 
 function onPerPageChange() {
-  emit('per-page-change', {registers: itemsPerPage.value})
+  table.onPerPage({
+    registers: itemsPerPage.value
+  })
 }
 
 function onPageChange(page) {
-  emit('page-change', {page: page})
+  table.onPage({
+    page: page
+  })
 }
 
 const getElementPosition = (element) => {
@@ -268,11 +240,11 @@ const getElementPosition = (element) => {
 };
 
 const funnelActive = (key) => {
-  return Object.values(props.filters[key].options).filter((o) => o.checked).length > 0
+  return Object.values(table.filters.value[key].options).filter((o) => o.checked).length > 0
 }
 
 const showChecks = (key) => {
-  props.filters[key].showFunnel = !props.filters[key].showFunnel;
+  table.filters.value[key].showFunnel = !table.filters.value[key].showFunnel;
 
   nextTick(() => {
     const funnelDropdown = document.querySelector(`.filter__checkbox-${key}`);
@@ -293,10 +265,10 @@ const showChecks = (key) => {
 };
 
 const uncheckFunnel = (key) => {
-  Object.values(props.filters[key].options).forEach((o) => o.checked = false)
+  Object.values(table.filters.value[key].options).forEach((o) => o.checked = false)
 }
 const checkAllFunnels = (key) => {
-  Object.values(props.filters[key].options).forEach((o) => o.checked = true)
+  Object.values(table.filters.value[key].options).forEach((o) => o.checked = true)
 }
 
 const classSelector = (value) => {
@@ -305,11 +277,11 @@ const classSelector = (value) => {
 };
 
 const handleClickOutside = (event) => {
-  Object.keys(props.columns).forEach(key => {
+  Object.keys(table.columns).forEach(key => {
     const funnel = document.querySelector(`.filter__checkbox-${key}`);
     const funnelButton = document.querySelector(`.funnel-button-${key}`);
     if(funnel && !funnel.contains(event.target) && !funnelButton.contains(event.target)){
-      props.filters[key].showFunnel = false;
+      table.filters.value[key].showFunnel = false;
     }
   });
 };

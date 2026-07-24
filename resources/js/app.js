@@ -8,6 +8,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import {createAppI18n} from './i18n'
 import Toast from 'vue-toastification';
 import "vue-toastification/dist/index.css"
+import 'primeicons/primeicons.css'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

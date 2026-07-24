@@ -1,7 +1,7 @@
 <template>
   <Head :title="t('users.title')"/>
 
-  <AppLayout :isLoading="isLoading" @resetFilters="resetFilters">
+  <AppLayout :isLoading="isLoading || table.loading">
 
     <div class="h-full flex flex-col bg-white rounded-lg shadow-md p-6">
 
@@ -13,11 +13,11 @@
       <!-- TOP BAR -->
       <div class="flex w-full justify-between">
         <div>
-          {{ t('datatable.total_registers') }}: {{ usersCopy.total }}
+          {{ t('datatable.total_registers') }}: {{ table.total }}
         </div>
 
         <div>
-          <button class="btn primary-button" @click="cleanFilters">
+          <button class="btn primary-button" @click="table.cleanFilters()">
             {{ t('datatable.clean_filters') }}
           </button>
 
@@ -35,23 +35,11 @@
       <!-- DATATABLE -->
       <div class="flex-1 min-h-0">
         <datatable
-            :data="usersCopy"
-            :filters="filtersCopy"
-            :columns="props.columns"
-            :actions="props.actions"
-            :funnelOptions="funnelOptions"
-            :is-row-clickable="true"
-            route-after-click='admin.users.index'
+            :table="table"
 
-            @funnel-filter="onFunnelFilter"
-            @per-page-change="onPerPage"
-            @page-change="onPage"
-            @sort-change="onSort"
-            @filter-change="onFilter"
+            @clickRow="onClickRow"
             @update="onUpdate"
             @delete="onDelete"
-
-            fontSize="0.8rem"
         />
       </div>
       <!-- DELETE MODAL -->
@@ -77,6 +65,7 @@ import {useI18n} from "vue-i18n"
 import AppLayout from "@/Layouts/AppLayout.vue"
 import Datatable from "@/Components/Datatable.vue"
 import ConfirmModal from "@/Components/ConfirmModal.vue"
+import {useDatatable} from "@/composables/useDatatable.js"
 
 const props = defineProps({
   users: Object,
@@ -89,8 +78,16 @@ const props = defineProps({
 const {t} = useI18n()
 const toast = useToast()
 
-const usersCopy = ref({...props.users})
-const filtersCopy = ref({...props.filters})
+const table = useDatatable({
+  data: props.users,
+  filters: props.filters,
+  columns: props.columns,
+  actions: props.actions,
+  funnelOptions: props.funnelOptions,
+  rowClickable: true,
+  dataRoute: 'admin.users.getData',
+  fontSize: '0.8rem'
+})
 
 const isLoading = ref(false)
 
@@ -108,102 +105,21 @@ function onUpdate(id) {
 }
 
 /**
+ * CLICKROW
+ */
+function onClickRow(id) {
+  router.visit(route('admin.users.show', id), {
+    preserveState: true,
+    preserveScroll: true,
+  })
+}
+
+/**
  * DELETE
  */
 function onDelete(id) {
   showConfirmDeleteModal.value = true
   registerToDelete.value = id
-}
-
-/**
- * PAGINATION
- */
-function onPage(event) {
-  filtersCopy.value.page = event.page
-  getData()
-}
-
-/**
- * FUNNEL FILTER
- */
-function onFunnelFilter(event) {
-  console.log(filtersCopy.value[event.col])
-  filtersCopy.value[event.col].showFunnel = false
-  filtersCopy.value.page = 1
-  getData()
-}
-
-/**
- * PER PAGE
- */
-function onPerPage(event) {
-  filtersCopy.value.page = 1
-  filtersCopy.value.perPage = event.registers
-  getData()
-}
-
-/**
- * SORT
- */
-function onSort(event) {
-  filtersCopy.value.page = 1
-  filtersCopy.value[event.col].order_direction = event.order
-  getData()
-}
-
-/**
- * FILTER TEXT
- */
-function onFilter(event) {
-  filtersCopy.value.page = 1
-  filtersCopy.value[event.col].value = event.value
-  getData()
-}
-
-/**
- * GET DATA
- */
-const getData = async () => {
-
-  isLoading.value = true
-
-  await axios.post(route('admin.users.getData'), filtersCopy.value)
-      .then(response => {
-        usersCopy.value = response.data
-      })
-      .catch(error => {
-        console.log(error)
-      })
-      .finally(() => {
-        isLoading.value = false
-      })
-}
-
-/**
- * CLEAN FILTERS
- */
-function cleanFilters() {
-  resetFilters()
-  getData()
-}
-
-/**
- * RESET FILTERS
- */
-function resetFilters() {
-
-  filtersCopy.value.page = 1
-
-  Object.keys(props.filters).forEach(key => {
-    filtersCopy.value[key].value = ''
-
-    if (filtersCopy.value[key].type === 'funnel') {
-
-      Object.keys(filtersCopy.value[key].options).forEach(option => {
-        filtersCopy.value[key].options[option].checked = false
-      })
-    }
-  })
 }
 
 /**
@@ -222,7 +138,7 @@ async function confirmDelete() {
     if (response.data.success) {
       toast.success(response.data.message)
       showConfirmDeleteModal.value = false
-      getData()
+      await table.getData()
     } else {
       toast.error(response.data.message)
     }
