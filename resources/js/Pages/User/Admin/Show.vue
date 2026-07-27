@@ -1,7 +1,7 @@
 <template>
   <Head :title="pair.symbol"/>
 
-  <AppLayout :isLoading="isLoading">
+  <AdminLayout :isLoading="isLoading">
 
     <div class="px-6">
 
@@ -66,12 +66,12 @@
       </div>
     </div>
 
-  </AppLayout>
+  </AdminLayout>
 </template>
 
 <script setup>
 import {Head} from '@inertiajs/vue3'
-import AppLayout from "@/Layouts/AppLayout.vue"
+import AdminLayout from "@/Layouts/AppLayout.vue"
 import BaseSelect from "@/Components/BaseSelect.vue"
 import {ref, onMounted, nextTick} from 'vue'
 import axios from 'axios'

@@ -1,7 +1,7 @@
 <template>
   <Head :title="t('users.title')"/>
 
-  <AppLayout :isLoading="isLoading || table.loading">
+  <AdminLayout :isLoading="layoutLoading">
 
     <div class="h-full flex flex-col bg-white rounded-lg shadow-md p-6">
 
@@ -52,17 +52,17 @@
           @cancel="cancelDelete"
       />
     </div>
-  </AppLayout>
+  </AdminLayout>
 </template>
 
 <script setup>
-import {ref, onBeforeUnmount} from 'vue'
+import {ref, onBeforeUnmount, computed} from 'vue'
 import {Head, Link, router} from '@inertiajs/vue3'
 import axios from 'axios'
 import {useToast} from "vue-toastification"
 import {useI18n} from "vue-i18n"
 
-import AppLayout from "@/Layouts/AppLayout.vue"
+import AdminLayout from "@/Layouts/AdminLayout.vue"
 import Datatable from "@/Components/Datatable.vue"
 import ConfirmModal from "@/Components/ConfirmModal.vue"
 import {useDatatable} from "@/composables/useDatatable.js"
@@ -90,6 +90,10 @@ const table = useDatatable({
 })
 
 const isLoading = ref(false)
+
+const layoutLoading = computed(() => {
+  return isLoading.value || table.loading.value
+})
 
 const showConfirmDeleteModal = ref(false)
 const registerToDelete = ref(null)

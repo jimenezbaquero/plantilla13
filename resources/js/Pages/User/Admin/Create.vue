@@ -1,7 +1,7 @@
 <template>
   <Head :title="t('pair.title')" />
   
-  <AppLayout :isLoading="isLoading">
+  <AdminLayout :isLoading="isLoading">
     
     <div class="max-w-4xl mx-auto">
       
@@ -16,14 +16,14 @@
     
     </div>
   
-  </AppLayout>
+  </AdminLayout>
 </template>
 
 <script setup>
 import {Head, useForm, router} from '@inertiajs/vue3'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AppLayout from "@/Layouts/AppLayout.vue"
+import AdminLayout from "@/Layouts/AppLayout.vue"
 import Form from "./Components/Form.vue"
 import { safeJsonParse } from "@/Utils/json.js"
 

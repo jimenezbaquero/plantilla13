@@ -11,14 +11,15 @@ class UserController extends Controller
 {
     public function __construct(
         private UserService $service
-    ) {}
+    ) {
+    }
 
     public function index(Request $request){
-        return Inertia::render('User/Admin/Index',[
+        return Inertia::render($this->getComponent(), [
             'users' => $this->service->getData($request->all()),
             'filters' => UserPresenter::filters(),
             'columns' => UserPresenter::columns(),
-            'actions' => ['update', 'delete'],
+            'actions' => $this->getActions(),
         ]);
     }
 

@@ -1,14 +1,17 @@
 <script setup>
-import Sidebar from '@/Components/Sidebar.vue'
+import AdminSidebar from '@/Components/AdminSidebar.vue'
 import Header from "@/Components/Header.vue";
 import FlashNotifications from "@/Components/FlashNotifications.vue";
+import Loading from "@/Components/Loading.vue";
 
-defineProps({
-  loading: {
+const props = defineProps({
+  isLoading: {
     type:Boolean,
     default: false
   }
 })
+
+console.log(props.isLoading)
 
 </script>
 
@@ -25,7 +28,7 @@ defineProps({
     "
   >
     <aside style="grid-area: sidebar;">
-      <Sidebar />
+      <AdminSidebar />
     </aside>
 
     <header style="grid-area: header;">
@@ -36,12 +39,7 @@ defineProps({
         class="h-full overflow-auto p-4"
         style="grid-area: main;"
     >
-      <div
-          v-if="loading"
-          class="absolute inset-0 bg-white/70 z-50 flex items-center justify-center"
-      >
-        Loading...
-      </div>
+      <Loading :isLoading="isLoading" />
       <slot />
     </main>
   </div>
