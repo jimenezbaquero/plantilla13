@@ -13,19 +13,29 @@ class RegistrationTest extends TestCase
     {
         $response = $this->get('/register');
 
-        $response->assertStatus(200);
+        $response->assertOk();
     }
 
     public function test_new_users_can_register(): void
     {
+        $this->assertGuest();
+        
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
-
+        
+        $response
+            ->assertValid()
+            ->assertRedirect(route('dashboard', absolute: false));
+        
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+            'name' => 'Test User',
+        ]);
     }
 }

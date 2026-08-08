@@ -19,12 +19,14 @@ class EmailVerificationTest extends TestCase
 
         $response = $this->actingAs($user)->get('/verify-email');
 
-        $response->assertStatus(200);
+        $response->assertOk();
     }
 
     public function test_email_can_be_verified(): void
     {
         $user = User::factory()->unverified()->create();
+        
+        $this->assertFalse($user->hasVerifiedEmail());
 
         Event::fake();
 
@@ -51,7 +53,9 @@ class EmailVerificationTest extends TestCase
             ['id' => $user->id, 'hash' => sha1('wrong-email')]
         );
 
-        $this->actingAs($user)->get($verificationUrl);
+        $response = $this->actingAs($user)->get($verificationUrl);
+        
+        $response->assertForbidden();
 
         $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }

@@ -16,7 +16,7 @@ class PasswordConfirmationTest extends TestCase
 
         $response = $this->actingAs($user)->get('/confirm-password');
 
-        $response->assertStatus(200);
+        $response->assertOk();
     }
 
     public function test_password_can_be_confirmed(): void
@@ -26,9 +26,11 @@ class PasswordConfirmationTest extends TestCase
         $response = $this->actingAs($user)->post('/confirm-password', [
             'password' => 'password',
         ]);
-
+        
+        $this->assertAuthenticatedAs($user);
+        
         $response->assertRedirect();
-        $response->assertSessionHasNoErrors();
+        $response->assertValid();
     }
 
     public function test_password_is_not_confirmed_with_invalid_password(): void
@@ -38,7 +40,7 @@ class PasswordConfirmationTest extends TestCase
         $response = $this->actingAs($user)->post('/confirm-password', [
             'password' => 'wrong-password',
         ]);
-
-        $response->assertSessionHasErrors();
+        
+        $response->assertInvalid('password');
     }
 }

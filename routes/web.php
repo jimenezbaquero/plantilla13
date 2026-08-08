@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -37,11 +37,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth','role:admin'])->group(function () {
+Route::middleware(['auth','role:admin'])->prefix('admin')->group(function () {
 
-    Route::resource('users', UserController::class, ['as' => 'admin'])
-        ->middleware(['auth','role:admin']);
-    Route::post('users/getData', [UserController::class, 'getData'])->name('admin.users.getData');
+    Route::resource('users', AdminUserController::class, ['as' => 'admin']);
+    Route::post('users/getData', [AdminUserController::class, 'getData'])->name('admin.users.getData');
 
 });
 

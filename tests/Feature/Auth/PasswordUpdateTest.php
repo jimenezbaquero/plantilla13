@@ -25,16 +25,16 @@ class PasswordUpdateTest extends TestCase
             ]);
 
         $response
-            ->assertSessionHasNoErrors()
+            ->assertValid()
             ->assertRedirect('/profile');
-
+        
+        $this->assertAuthenticatedAs($user);
         $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
     }
 
-    public function test_correct_password_must_be_provided_to_update_password(): void
-    {
+    public function test_correct_password_must_be_provided_to_update_password(): void {
         $user = User::factory()->create();
-
+        
         $response = $this
             ->actingAs($user)
             ->from('/profile')
@@ -43,9 +43,13 @@ class PasswordUpdateTest extends TestCase
                 'password' => 'new-password',
                 'password_confirmation' => 'new-password',
             ]);
-
+        
         $response
-            ->assertSessionHasErrors('current_password')
+            ->assertInvalid('current_password')
             ->assertRedirect('/profile');
+        
+        $this->assertTrue(
+            Hash::check('password', $user->fresh()->password)
+        );
     }
 }
