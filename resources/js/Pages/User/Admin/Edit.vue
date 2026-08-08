@@ -1,21 +1,21 @@
 <template>
-  <Head :title="t('pair.title')" />
-  
+  <Head :title="t('users.actions.update.title')" />
+
   <AdminLayout :isLoading="isLoading">
-    
+
     <div class="max-w-4xl mx-auto">
-      
+
       <Form
         :form="form"
         :exchanges="props.exchanges"
-        :title="t('pair.actions.create')"
-        :description="t('pair.create_description')"
+        :title="t('users.actions.update.title')"
+        :description="t('users.actions.update.description')"
         @cancel = "cancel"
         @save = "save"
       />
-    
+
     </div>
-  
+
   </AdminLayout>
 </template>
 
@@ -67,4 +67,4 @@ function cancel() {
 }
 </script>
 
-<style scoped src="@/Styles/crud.css"></style>
+<style scoped src="@/../css/crud.css"></style>

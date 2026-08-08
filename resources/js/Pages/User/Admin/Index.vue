@@ -25,7 +25,7 @@
               :href="route('admin.users.index')"
               class="ml-2 btn primary-button"
           >
-            {{ t('users.create') }}
+            {{ t('users.actions.create.title') }}
           </Link>
         </div>
       </div>
@@ -46,8 +46,8 @@
       <ConfirmModal
           v-if="showConfirmDeleteModal"
           :show="showConfirmDeleteModal"
-          :title="t('users.delete_title')"
-          :message="t('users.delete_confirm')"
+          :title="t('users.actions.delete.title')"
+          :message="t('users.actions.delete.confirm_message')"
           @confirm="confirmDelete"
           @cancel="cancelDelete"
       />

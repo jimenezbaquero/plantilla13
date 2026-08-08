@@ -1,7 +1,22 @@
 {
-  "create": "Crear usuario",
-  "name": "Nombre",
-  "role": "Rol",
-  "title": "Usuarios",
-  "users": "Usuarios"
+  "actions": {
+    "create": {
+      "title": "Crear usuario",
+      "description": "Crear un nuevo usuario"
+    },
+    "update": {
+      "title": "Editar usuario",
+      "description": "Editar un usuario ya existente"
+    },
+    "delete": {
+      "title": "Eliminar usuario",
+      "confirm_message": "¿Está seguro de que desea eliminar este usuario?"
+    }
+  },
+  "fields": {
+    "name": "Nombre",
+    "role": "Rol",
+    "title": "Usuarios"
+  },
+  "title": "Usuarios"
 }

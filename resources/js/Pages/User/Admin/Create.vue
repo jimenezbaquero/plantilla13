@@ -1,31 +1,31 @@
 <template>
-  <Head :title="t('pair.title')" />
+  <Head :title="t('users.actions.create.title')" />
 
-  <AppLayout :isLoading="isLoading">
+  <AdminLayout :isLoading="isLoading">
 
     <div class="max-w-4xl mx-auto">
 
       <Form
         :form="form"
         :exchanges="props.exchanges"
-        :title="t('pair.actions.create')"
-        :description="t('pair.create_description')"
+        :title="t('users.actions.create.title')"
+        :description="t('users.actions.create.description')"
         @cancel = "cancel"
         @save = "save"
       />
 
     </div>
 
-  </AppLayout>
+  </AdminLayout>
 </template>
 
 <script setup>
 import {Head, useForm, router} from '@inertiajs/vue3'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AppLayout from "@/Layouts/AppLayout.vue"
 import Form from "./Components/Form.vue"
 import { safeJsonParse } from "@/Utils/json.js"
+import AdminLayout from "@/Layouts/AdminLayout.vue";
 
 const props = defineProps({
   'exchanges': Array

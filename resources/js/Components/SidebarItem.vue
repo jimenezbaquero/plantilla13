@@ -16,7 +16,7 @@
         />
 
         <span class="sidebarItem-label">
-          {{ item.label }}
+          {{ t(item.label) }}
         </span>
       </div>
 
@@ -31,7 +31,7 @@
 
 <script setup>
 import {ChevronRightIcon} from '@heroicons/vue/24/outline'
-import {ref} from "vue";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps({
   item: {
@@ -43,6 +43,8 @@ const props = defineProps({
     default: false,
   },
 })
+
+const { t } = useI18n()
 
 const emits = defineEmits([
   'select',

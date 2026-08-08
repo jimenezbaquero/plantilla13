@@ -1,13 +1,9 @@
-import {useI18n} from "vue-i18n";
-import {defineAsyncComponent} from "vue";
-
 export function useAdminMenu() {
-    const {t} = useI18n()
 
     return [
         {
             id: 'user',
-            label: t('users.users'),
+            label: 'users.title',
             href: route('admin.users.index'),
         },
         {
