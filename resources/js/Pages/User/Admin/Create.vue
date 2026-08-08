@@ -1,10 +1,10 @@
 <template>
   <Head :title="t('pair.title')" />
-  
+
   <AppLayout :isLoading="isLoading">
-    
+
     <div class="max-w-4xl mx-auto">
-      
+
       <Form
         :form="form"
         :exchanges="props.exchanges"
@@ -13,9 +13,9 @@
         @cancel = "cancel"
         @save = "save"
       />
-    
+
     </div>
-  
+
   </AppLayout>
 </template>
 
@@ -58,10 +58,10 @@ function save() {
       ...data,
       metadata: safeJsonParse(data.metadata)
     }
-  }).post(route('pairs.store'))
+  }).post(route('admin.users.store'))
 }
 
 function cancel() {
-  router.visit(route('pairs.index'))
+  router.visit(route('admin.users.index'))
 }
 </script>

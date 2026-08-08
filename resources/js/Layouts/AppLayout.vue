@@ -1,23 +1,9 @@
-<script setup>
-import Sidebar from '@/Components/Sidebar.vue'
-import Header from "@/Components/Header.vue";
-import FlashNotifications from "@/Components/FlashNotifications.vue";
-
-defineProps({
-  loading: {
-    type:Boolean,
-    default: false
-  }
-})
-
-</script>
-
 <template>
   <FlashNotifications />
   <div
       class="grid h-screen"
       style="
-      grid-template-columns: 16rem 1fr;
+      grid-template-columns: 11rem 1fr;
       grid-template-rows: 3.5rem 1fr;
       grid-template-areas:
         'sidebar header'
@@ -25,7 +11,7 @@ defineProps({
     "
   >
     <aside style="grid-area: sidebar;">
-      <Sidebar />
+      <Sidebar :menu="menu" :footer="footer" :header="header" />
     </aside>
 
     <header style="grid-area: header;">
@@ -46,3 +32,36 @@ defineProps({
     </main>
   </div>
 </template>
+
+<script setup>
+import Sidebar from '@/Components/Sidebar.vue'
+import Header from "@/Components/Header.vue";
+import FlashNotifications from "@/Components/FlashNotifications.vue";
+import {useI18n} from "vue-i18n";
+import {useAdminMenu} from "@/composables/useAdminMenu.js";
+
+defineProps({
+  loading: {
+    type:Boolean,
+    default: false
+  }
+})
+
+const { t } = useI18n()
+
+const menu = useAdminMenu()
+
+const header = {
+  alt: t('app.menu.logo'),
+  src: '/img/logo.svg',
+  id: 'logo-image',
+  href: route('dashboard'),
+}
+
+const footer = {
+  text: t('app.footer'),
+  href: '/dashboard',
+  target: '_blank',
+}
+
+</script>

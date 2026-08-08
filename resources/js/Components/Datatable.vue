@@ -183,7 +183,7 @@ const props = defineProps({
   },
 });
 
-const table = table
+const table = props.table
 
 const emit = defineEmits(['update', 'delete', 'clickRow']);
 

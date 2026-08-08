@@ -1,7 +1,7 @@
 <script setup>
 import { usePage } from '@inertiajs/vue3';
 import { watch } from 'vue';
-import useNotify from "@/componsables/useNotify.js";
+import useNotify from "@/composables/useNotify.js";
 
 const page = usePage();
 const notify = useNotify();

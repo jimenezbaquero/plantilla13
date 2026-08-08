@@ -1,0 +1,27 @@
+@theme {
+    /* Marca */
+    --color-primary: #2563eb;
+    --color-primary-hover: #1d4ed8;
+    --color-primary-light: #dbeafe;
+    --color-primary-dark: #1e40af;
+
+    /* Secundario */
+    --color-secondary: #64748b;
+    --color-secondary-hover: #475569;
+    --color-secondary-light: #e2e8f0;
+
+    /* Estados */
+    --color-success: #16a34a;
+    --color-warning: #f59e0b;
+    --color-danger: #dc2626;
+    --color-info: #0ea5e9;
+
+    /* Superficies */
+    --color-background: #f8fafc;
+    --color-surface: #ffffff;
+    --color-border: #e5e7eb;
+
+    /* Texto */
+    --color-text: #111827;
+    --color-text-muted: #6b7280;
+}
