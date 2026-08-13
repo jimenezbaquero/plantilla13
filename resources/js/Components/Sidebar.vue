@@ -1,5 +1,6 @@
 <template>
-  <div v-show="show" ref="sidebarRef" class="sidebar">
+  <div v-show="show" ref="sidebarRef" class="sidebar"
+       @mouseleave="onMouseLeave">
     <div class="sidebar-first-column">
 
       <div class="sidebar-content">
@@ -108,6 +109,12 @@ function selectItem(item, level) {
 
 const sidebarRef = ref(null)
 
+const closeSidebar = () => {
+  selectedPath.value = []
+  columnName.value = []
+  props.show = false
+}
+
 function onClickOutside(event) {
   console.log(sidebarRef.value.contains(event.target))
   if (!props.show) {
@@ -118,10 +125,16 @@ function onClickOutside(event) {
     return
   }
 
-  selectedPath.value = []
-  columnName.value = []
-  props.show = false
+  closeSidebar()
 }
+
+let outTimeout = null
+
+const onMouseLeave = () => {
+  outTimeout = setTimeout(() => {
+    closeSidebar()
+  }, 2000);
+};
 
 onMounted(() => {
   document.addEventListener('pointerdown', onClickOutside)

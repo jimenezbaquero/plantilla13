@@ -1,6 +1,8 @@
 <template>
   <button
       @click="select(item)"
+      @mouseenter="onMouseEnter"
+      @mouseleave="onMouseLeave"
       :class="[
       'sidebarItem',
       { 'sidebarItem--selected': selected }
@@ -49,6 +51,18 @@ const { t } = useI18n()
 const emits = defineEmits([
   'select',
 ])
+
+let hoverTimeout = null;
+
+const onMouseEnter = () => {
+  if (!props.item.children?.length) {
+    return;
+  }
+  
+  hoverTimeout = setTimeout(() => {
+    select(props.item);
+  }, 400);
+};
 
 const select = (item) => {
   emits('select', item)
