@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -20,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'email_verified_at'
     ];
     
     protected $hidden = [
@@ -59,5 +61,10 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn () => $this->hasRole('guess'),
         );
+    }
+    
+    public function socialAccounts(): HasMany
+    {
+        return $this->hasMany(SocialAccount::class);
     }
 }
