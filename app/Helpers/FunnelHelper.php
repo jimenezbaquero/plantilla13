@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Spatie\Permission\Models\Role;
+
 class FunnelHelper
 {
     public static function getOptions($field) {
@@ -9,6 +11,9 @@ class FunnelHelper
         switch ($field) {
             case('is_active'):
                 $options = self::createBooleanOptions();
+                break;
+            case('role'):
+                $options = self::createRoleOptions();
                 break;
         }
         return $options;
@@ -27,5 +32,22 @@ class FunnelHelper
                 'checked' => false
             ]
         ];
+    }
+    
+    private static function makeOptions($options){
+        $data = [];
+        foreach ($options as $key=>$option) {
+            $data[$key] = [
+                'label' => $option,
+                'value' => $key,
+                'checked' => false,
+            ];
+        }
+        return $data;
+    }
+    
+    private static function createRoleOptions() {
+        $roles = Role::all()->pluck('name', 'id')->toArray();
+        return self::makeOptions($roles);
     }
 }

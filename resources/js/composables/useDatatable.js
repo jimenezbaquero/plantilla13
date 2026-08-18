@@ -22,6 +22,7 @@ export function useDatatable(config) {
             )
 
             data.value = response.data
+            total.value = response.data.total
 
         } catch (error) {
 
@@ -46,19 +47,24 @@ export function useDatatable(config) {
     function onPerPage(event) {
 
         filters.value.page = 1
-        filters.value.perPage = event.registers
+        filters.value.perPage = event.perPage
 
         return getData()
 
     }
 
     function onSort(event) {
-
         filters.value.page = 1
+
+        Object.keys(filters.value).forEach(key => {
+            if (filters.value[key].order_direction !== undefined) {
+                filters.value[key].order_direction = ''
+            }
+        })
+
         filters.value[event.col].order_direction = event.order
 
         return getData()
-
     }
 
     function onFilter(event) {

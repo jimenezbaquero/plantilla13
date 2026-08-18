@@ -2,6 +2,8 @@
 
 namespace App\Presenters;
 
+use App\Helpers\FunnelHelper;
+
 class UserPresenter
 {
     public static function columns(): array
@@ -11,7 +13,7 @@ class UserPresenter
             'name' => [
                 'key' => 'name',
                 'field' => 'name',
-                'header' => 'users.name',
+                'header' => 'users.fields.name',
                 'sortable' => true,
                 'filterable' => true,
                 'type' => 'text',
@@ -20,9 +22,9 @@ class UserPresenter
             'role' => [
                 'key' => 'role',
                 'field' => 'role',
-                'header' => 'users.role',
+                'header' => 'users.fields.role',
                 'sortable' => true,
-                'filterable' => true,
+                'filterable' => false,
                 'type' => 'text',
                 'width' => '200px',
             ],
@@ -41,10 +43,14 @@ class UserPresenter
             ],
             'role' => [
                 'value' => '',
-                'type' => 'text',
-                'field' => 'name',
-                'operator' => 'like',
+                'type' => 'funnel',
+                'field' => 'id',
+                'relation' => 'roles',
+                'operator' => '=',
                 'order_direction' => '',
+                'order_field' => 'name',
+                'showFunnel' => false,
+                'options' => FunnelHelper::getOptions('role'),
             ]
         ];
     }

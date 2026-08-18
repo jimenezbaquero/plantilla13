@@ -21,9 +21,9 @@
                   <div class="filter__header">
                     <h3 class="filter__title">{{ value.name }}</h3>
                     <div class="filter__actions">
-                      <h3 class="clean__link" @click="checkAllFunnels(key)">{{ t('filter.select_all') }}</h3>
-                      <h3 class="clean__link" @click="onFunnelFilter(key)">{{ t('filter.filter') }}</h3>
-                      <h3 class="clean__link" @click="uncheckFunnel(key)">{{ t('filter.clean') }}</h3>
+                      <h3 class="clean__link" @click="checkAllFunnels(key)">{{ t('filters.select_all') }}</h3>
+                      <h3 class="clean__link" @click="uncheckFunnel(key)">{{ t('filters.clean') }}</h3>
+                      <h3 class="clean__link" @click="onFunnelFilter(key)">{{ t('filters.filter') }}</h3>
                     </div>
                   </div>
                   <div class="filter__body">
@@ -154,7 +154,7 @@
     <div class="pagination__container">
       <div class="select__wrapper">
         {{ t('datatable.show') }}
-        <select v-model="itemsPerPage" class="page-select custom-select" @change="onPerPageChange">
+        <select v-model="itemsPerPage" class="page-select custom-select">
           <option v-for="option in perPageOptions" :key="option" :value="option">
             {{ option }}
           </option>
@@ -185,10 +185,20 @@ const props = defineProps({
 
 const table = props.table
 
+console.log('perPage:', table.filters.value.perPage)
+console.log('filters:', table.filters.value)
+
 const emit = defineEmits(['update', 'delete', 'clickRow']);
 
 const perPageOptions = [10, 20, 30, 50, 100];
-const itemsPerPage = ref(perPageOptions[0]);
+const itemsPerPage = computed({
+  get: () => table.data.value.per_page,
+  set: (value) => {
+    table.onPerPage({
+      perPage: value
+    })
+  }
+})
 const {t} = useI18n()
 
 let filterTimeout = null
@@ -197,6 +207,12 @@ function toggleSort(col, order) {
   table.onSort( {
     col: col,
     order: order
+  })
+}
+
+function onPageChange(page) {
+  table.onPage({
+    page: page
   })
 }
 
@@ -218,18 +234,6 @@ function onFilterChange(key) {
   }, 500)
 }
 
-function onPerPageChange() {
-  table.onPerPage({
-    registers: itemsPerPage.value
-  })
-}
-
-function onPageChange(page) {
-  table.onPage({
-    page: page
-  })
-}
-
 const getElementPosition = (element) => {
   const table = document.getElementsByTagName('table')[0]
   const rect = table.getBoundingClientRect();
@@ -248,9 +252,8 @@ const showChecks = (key) => {
 
   nextTick(() => {
     const funnelDropdown = document.querySelector(`.filter__checkbox-${key}`);
-    const maxRight = funnelDropdown.getBoundingClientRect().right
-
     if(funnelDropdown){
+      const maxRight = funnelDropdown.getBoundingClientRect().right
       const posRight = getElementPosition(funnelDropdown).right;
 
       if(posRight < maxRight){

@@ -12,7 +12,7 @@ class UserService {
         $perPage = $payload['perPage'] ?? 10;
         $page = $payload['page'] ?? 1;
 
-        $query = User::query();
+        $query = User::with('roles');
 
         $query = FilterHelper::applyFilter($query, $payload);
         $query = OrderHelper::makeOrder($query, $payload);

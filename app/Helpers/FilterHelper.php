@@ -15,7 +15,7 @@ class FilterHelper
             
             $type = $filter['type'] ?? 'text';
             $field = $filter['field'];
-            $op = $filter['operation'] ?? '=';
+            $op = $filter['operator'] ?? '=';
             $value = $filter['value'];
             
             if ($type !== 'funnel' &&($value === null || $value === '')) {
@@ -24,7 +24,7 @@ class FilterHelper
             
             $query = match ($type) {
                 
-                'text' => self::applyTextFilter($query, $field, $value),
+                'text' => self::applyTextFilter($query, $filter),
                 
                 'funnel' => self::applyFunnelFilter($query, $filter),
                 
@@ -37,30 +37,56 @@ class FilterHelper
         return $query;
     }
     
-    private static function applyTextFilter(Builder $query, string $field, string $value): Builder
+    private static function applyTextFilter(Builder $query, array $filter): Builder
     {
-        return $query->where($field, 'like', "%{$value}%");
-    }
-    
-    private static function applyFunnelFilter(Builder $query, array $filter): Builder
-    {
-        $unique = true;
-        foreach ($filter['options'] as $option) {
-            if($option['checked'] || $option['checked'] === 'true') {
-                if($unique) {
-                    $query->where($filter['field'], $option['value']);
-                    $unique = false;
-                }else{
-                    $query->orWhere($filter['field'], $option['value']);
-                }
-            }
+        if(!empty($filter['relation'])) {
+            $query->whereHas($filter['relation'], function(Builder $q) use ($filter) {
+                $q->where($filter['field'], $filter['operator'], '%'.$filter['value'].'%');
+            });
+        } else {
+            $query->where($filter['field'], $filter['operator'], '%'.$filter['value'].'%');
         }
         return $query;
     }
     
-    private static function applyNumberFilter(Builder $query, string $field, string $op, $value): Builder
+    private static function applyFunnelFilter(Builder $query, array $filter): Builder
     {
-        return $query->where($field, $op, $value);
+        $checkedOptions = collect($filter['options'])
+            ->filter(fn ($option) => $option['checked'] || $option['checked'] === 'true')
+            ->values();
+        
+        $query = $query->where(function ($query) use ($checkedOptions, $filter) {
+        
+            foreach ($checkedOptions as $key=>$option) {
+                $method = 'orWhere';
+                if($key === 0){
+                    $method = 'where';
+                }
+                
+                if(!empty($filter['relation'])) {
+                    $method .= 'Has';
+                    $query->{$method}($filter['relation'], function($q) use($option, $filter) {
+                        $q->where($filter['field'], $filter['operator'], $option['value']);
+                    });
+                }else {
+                    $query->{$method}($filter['field'], $filter['operator'],  $option['value']);
+                }
+            }
+        });
+        
+        return $query;
+    }
+    
+    private static function applyNumberFilter(Builder $query, array $filter): Builder
+    {
+        if(!empty($filter['relation'])) {
+            $query = $query->whereHas($filter['relation'], function(Builder $q) use ($filter) {
+                $q->where($filter['field'], $filter['operator'], '%'.$filter['value'].'%');
+            });
+        } else {
+            $query->where($filter['field'], $filter['operator'], '%'.$filter['value'].'%');
+        }
+        return $query;
     }
 
 }
